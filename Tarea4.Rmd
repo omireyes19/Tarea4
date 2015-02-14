@@ -1,0 +1,87 @@
+---
+title: "Tarea de las sesiones 8 y 9"
+output: html_document
+---
+
+## Omar Reyes Villa 127131
+## Arturo Gutierrez Escamilla 136979
+## Jose Arturo Resendiz Lira 136989
+
+```{r Ajustes, echo=FALSE}
+directorio <- "E:/ITAM/Aplicada I/EJ8"
+
+```
+
+## Descripcion de los datos 
+
+La información se obtuvo de la página del Banco de México el día 28 de agosto de 2014.
+
+```{r LecturaDatos}
+setwd(directorio)
+TC.Banxico<-read.table("./tipoCambioBanxico.txt", sep="|", header=TRUE, stringsAsFactors=FALSE)
+```
+
+## Transformacion de los datos
+
+```{r Transformacion y depuracion}
+TC.Banxico$Fecha.DOF <- as.Date(TC.Banxico$Fecha.DOF, format="%d/%m/%Y")
+TC.Banxico$TC <- as.Numeric(TC.Banxico$Fecha.DOF, format="%d/%m/%Y")
+# Creo una columna
+temporal <- as.POSIXlt(TC.Banxico$Fecha.DOF)
+TC.Banxico$año <- unclass(temporal)$year+1900
+TC.Banxico<-subset(TC.Banxico, TC!="N/E")
+TC.Banxico$TC<- as.numeric(TC.Banxico$TC)
+
+```
+
+## Grafica
+
+```{r Grafica 1}
+par(mfrow=c(3,3)) # 3 renglones, 3 columnas.
+for(i in 2006:2014){
+      Tc<-subset(TC.Banxico,año==i)
+      hist(Tc$TC, breaks= seq(9.9,15.4, length.out=30), main = paste0("Histograma de ", i), xlab = "Tipo de Cambio", xlim = c(9.9, 15.4), ylab = "Frecuencia", border = "white", col = "blue", ylim = c(0, 120))
+      abline(v = mean(Tc$TC),col="red")
+      abline(v = median(Tc$TC))
+}
+
+```
+### Conclusion de las primeras graficas
+Pudimos observar que durante los años 2006, 2007, 2010, 2013 y 2014, el tipo de cambio casi no varió y se quedo fijo en sus valores respectivos, por lo que es entendible que la media y la mediana se parezcan mucho.
+
+Durante los años 2009, 2012, el tipo de cambio varió un poco más sin llegar a algo extraordinario pues se ve un poco de normalidad pero la media y mediana no coinciden tanto como los años anteriores.
+
+En cambio, durante los años 2008 y 2011, la variabilidad es muchisima y no hay ni siquiera un patrón visible, y claramente la media y mediana se va hacia el lado donde están las barras mas grandes.
+
+
+```{r Grafica 2}
+TC.Banxico$año <- as.factor(TC.Banxico$año)
+par(mfrow=c(3,3)) # 3 renglones, 3 columnas.
+for(i in 2006:2014){
+  Tc<-subset(TC.Banxico,año==i)
+      boxplot(Tc$TC, breaks= seq(9.9,15.4, length.out=30), main = paste0("Boxplot de ", i), xlab = "Tipo de Cambio", ylab = "Frecuencia",border = "black", col = "red", range=0, varwidth = TRUE, horizontal = TRUE, ylim = c(9.9, 15.4))
+}
+
+
+```
+### Conclusion de las graficas de cajas
+Nuestro boxplots coinciden con nuestras graficas de barras de manera que estan sesgadas al mismo lado que las barras, la varianza es mucho más fácil de ver (a nuestro parecer) gracias al largo de las cajas: entre mas largas, mas varianza. Pero claramente las conclusiones coinciden con las de las otras graficas. Ademas la comparacion es mas facil por la construccion, es decir que las dimensiones coinciden.
+
+```{r Grafica 3}
+curve(exp(-0.5*x^2)/sqrt(2*pi),
+      main=expression(paste("Gráfica de la función ",
+      frac(1,sqrt(2*pi))*e^frac(-x^2,2))),
+      type="l",
+      col= "red",
+      from = -4,
+      to= 4,
+      n=100,
+      xname="x",
+      par(las=1),
+      xlab="x",
+      ylab="f(x)",
+      )
+ text(1.5,0.39,"Valor máximo" )
+ points(0,0.4, col="blue", pch=19)
+ abline(v=0)
+```
